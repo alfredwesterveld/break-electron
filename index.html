@@ -1,0 +1,56 @@
+<html>
+<head>
+    <style>
+        body {
+            background-color: deepskyblue;
+        }
+        .center {
+            margin: auto;
+            width: 60%;
+        }
+
+        .center h1 {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        var remote = require('remote')
+        const win = remote.getCurrentWindow()
+
+        function hide() {
+            console.log('hide please')
+            win.hide()
+        }
+
+        function minutes(min) {
+            return parseInt(min * 60 * 1000, 10)
+        }
+
+        function seconds(sec) {
+            return parseInt(sec * 1000, 10);
+        }
+
+
+
+        setInterval(function () {
+            win.show()
+
+            setTimeout(function () {
+                win.hide()
+            }, seconds(10));
+                
+        }, seconds(30))
+
+    </script>
+    <div class="center">
+        <h1>Take a break</h1>
+
+        <div>
+            <button onclick="hide()">hide</button>
+        </div>
+
+    </div>
+</body>
+</html>
