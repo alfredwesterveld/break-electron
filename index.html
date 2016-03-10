@@ -2,11 +2,13 @@
 <head>
     <style>
         body {
-            background-color: deepskyblue;
+            background: transparant;
         }
+
         .center {
             margin: auto;
-            width: 60%;
+            background-color: deepskyblue;
+            width: 50%;
         }
 
         .center h1 {
@@ -16,33 +18,42 @@
 </head>
 <body>
     <script>
-        var remote = require('remote')
-        const win = remote.getCurrentWindow()
-
         function hide() {
-            console.log('hide please')
-            win.hide()
-        }
-
-        function minutes(min) {
-            return parseInt(min * 60 * 1000, 10)
+            win.hide();
         }
 
         function seconds(sec) {
             return parseInt(sec * 1000, 10);
         }
 
+        Promise = require('bluebird');
+        const fs = Promise.promisifyAll(require('fs'));
+        const remote = require('remote')
+        const win = remote.getCurrentWindow()
 
+        const readPromise = fs.readFileAsync('./settings.json')
 
-        setInterval(function () {
-            win.show()
+        const takeMicroBreakPromise = readPromise.then(function (data) {
+            try {
+                const obj = JSON.parse(data);
+                const micro = obj.micro;
 
-            setTimeout(function () {
-                win.hide()
-            }, seconds(10));
-                
-        }, seconds(30))
+                const onInterval = function () {
+                    win.showInactive();
 
+                    Promise.delay(seconds(micro.time)).then(function (val) {
+                        win.hide();
+                    })
+                }
+
+                setInterval(onInterval, seconds(micro.after));
+            } catch (e) {
+                return e;
+            }
+
+        });
+
+        readPromise.then(takeMicroBreakPromise);
     </script>
     <div class="center">
         <h1>Take a break</h1>
@@ -53,4 +64,4 @@
 
     </div>
 </body>
-</html>
+    </html>
