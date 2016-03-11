@@ -47,7 +47,7 @@ app.on('ready', function() {
     win.loadURL('file://' + __dirname + '/index.html');
 
     // Register a 'ctrl+x' shortcut listener.
-    var ret = globalShortcut.register('ctrl+x', function() {
+    var ret = globalShortcut.register('ctrl+alt+x', function() {
         console.log(`global shortcut hide window:${externaldisplay.isVisible()}`);
 
         if (externaldisplay.isVisible()) {
@@ -55,16 +55,23 @@ app.on('ready', function() {
         }
 
         if (win.isVisible()) {
-            win.hide()
+            win.hide();
         }
 
     });
 
     if (!ret) {
         console.log('registration failed');
+        process.exit();
     }
 
-    // Check whether a shortcut is registered.
-    console.log(globalShortcut.isRegistered('ctrl+x'));
+    var ret = globalShortcut.register('ctrl+alt+q', function() {
+        console.log(`global shortcut close application`);
+        app.exit(0);
+    });
 
+    if (!ret) {
+        console.log('registration failed');
+        process.exit();
+    }
 });

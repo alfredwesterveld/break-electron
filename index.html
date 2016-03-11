@@ -2,7 +2,6 @@
 <head>
     <style>
         body {
-            background: transparant;
         }
 
         .center {
@@ -18,59 +17,74 @@
     </style>
 </head>
 <body>
-    <script>
-        function hide() {
-            win.hide();
-        }
-
-        function seconds(sec) {
-            return parseInt(sec * 1000, 10);
-        }
-
-        Promise = require('bluebird');
-        const fs = Promise.promisifyAll(require('fs'));
-        const remote = require('remote')
-        const win = remote.getCurrentWindow()
-
-        const readPromise = fs.readFileAsync('./settings.json')
-
-        const takeMicroBreakPromise = readPromise.then(function (data) {
-            try {
-                const obj = JSON.parse(data);
-                const micro = obj.micro;
-
-                const onInterval = function () {
-                    win.showInactive();
-
-                    Promise.delay(seconds(micro.duration)).then(function (val) {
-                        win.hide();
-                    })
-
-                    
-                }
-
-                setInterval(onInterval, seconds(micro.x));
-            } catch (e) {
-                return e;
-            }
-
-        });
-
-        readPromise.then(takeMicroBreakPromise).catch(function (error) {
-            console.dir(error);
-        });
-    </script>
     <div class="center">
         <h1>Take a break</h1>
-
         <div>
             <div>
+                <h2 id="break"></h2>
                 <label>Time left:</label>
-                <label id="" class=""></label>
+                <label id="time" class=""></label>
             </div>
             <button onclick="hide()">hide</button>
         </div>
 
+        <script>
+            'use strict';
+
+            function hide() {
+                win.hide();
+            }
+
+            function seconds(sec) {
+                return parseInt(sec * 1000, 10);
+            }
+
+            Promise = require('bluebird');
+            const fs = Promise.promisifyAll(require('fs'));
+            const $ = require('jquery');
+            const remote = require('remote');
+            const win = remote.getCurrentWindow();
+            const data = fs.readFileSync('./settings.json', 'utf-8');
+            const obj = JSON.parse(data);
+            const micro = obj.micro;
+            const timeDOM = $('#time');
+
+
+            const showTimeLeft = function () {
+                let duration = micro.duration;
+                timeDOM.text(`${duration} seconds left`);
+
+                function everySecond() {
+                    if (--duration === 0) {
+                        console.log('cancel timer');
+                        clearInterval(timer);
+                    } else {
+                        timeDOM.text(`${duration} seconds left`);
+                    }
+                }
+
+                const timer = setInterval(everySecond, 1000)
+            }
+
+            const takeMicroBreak = function () {
+                const onInterval = function () {
+                    win.showInactive();
+                    showTimeLeft();
+
+                    Promise.delay(seconds(micro.duration)).then(function (val) {
+                        win.hide();
+                    });
+                }
+
+                try {
+                    setInterval(onInterval, seconds(micro.x));
+                } catch (e) {
+                    return e;
+                }
+            }
+
+            takeMicroBreak();
+        </script>
     </div>
 </body>
-    </html>
+</html>

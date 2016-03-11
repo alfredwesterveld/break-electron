@@ -1,9 +1,6 @@
 {
   "micro": {
-    "x": 10,
-    "duration": 5
-  },
-  "macro": {
-
+    "x": 150,
+    "duration": 30
   }
 }
