@@ -54,6 +54,10 @@ app.on('ready', function() {
             externaldisplay.hide();
         }
 
+        if (win.isVisible()) {
+            win.hide()
+        }
+
     });
 
     if (!ret) {

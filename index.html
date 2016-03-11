@@ -14,6 +14,7 @@
         .center h1 {
             margin: 5px;
         }
+
     </style>
 </head>
 <body>
@@ -41,24 +42,32 @@
                 const onInterval = function () {
                     win.showInactive();
 
-                    Promise.delay(seconds(micro.time)).then(function (val) {
+                    Promise.delay(seconds(micro.duration)).then(function (val) {
                         win.hide();
                     })
+
+                    
                 }
 
-                setInterval(onInterval, seconds(micro.after));
+                setInterval(onInterval, seconds(micro.x));
             } catch (e) {
                 return e;
             }
 
         });
 
-        readPromise.then(takeMicroBreakPromise);
+        readPromise.then(takeMicroBreakPromise).catch(function (error) {
+            console.dir(error);
+        });
     </script>
     <div class="center">
         <h1>Take a break</h1>
 
         <div>
+            <div>
+                <label>Time left:</label>
+                <label id="" class=""></label>
+            </div>
             <button onclick="hide()">hide</button>
         </div>
 
