@@ -19,59 +19,58 @@ app.on('ready', function() {
     }
 
     if (externalDisplay) {
+
+        // Should be calculated by box(dimensions).
         externaldisplay = new BrowserWindow({
             x: externalDisplay.bounds.x + ((externalDisplay.bounds.x + 200) / 2),
             y: externalDisplay.bounds.y + ((externalDisplay.bounds.y + 900 / 2)),
             show: false,
             width: 400,
-            height: 200,
             frame: false,
             transparent: true,
             resizable: false
         });
+
+        externaldisplay.setAlwaysOnTop(true);
+        externaldisplay.loadURL('file://' + __dirname + '/index.html');
     }
 
     win = new BrowserWindow({
         show: false,
         width: 400,
-        height: 200,
         frame: false,
         transparent: true,
         resizable: false
     });
 
-    externaldisplay.setAlwaysOnTop(true);
-    externaldisplay.loadURL('file://' + __dirname + '/index.html');
-
     win.setAlwaysOnTop(true);
     win.loadURL('file://' + __dirname + '/index.html');
 
-    // Register a 'ctrl+x' shortcut listener.
+    // Register closing window shortcut listener.
     var ret = globalShortcut.register('ctrl+alt+x', function() {
-        console.log(`global shortcut hide window:${externaldisplay.isVisible()}`);
-
-        if (externaldisplay.isVisible()) {
+        if (externaldisplay && externaldisplay.isVisible()) {
+            console.log(`global shortcut hide window:${externaldisplay.isVisible()}`);
             externaldisplay.hide();
         }
 
-        if (win.isVisible()) {
+        if (win && win.isVisible()) {
             win.hide();
         }
-
     });
 
     if (!ret) {
-        console.log('registration failed');
+        console.log('registration failed ctrl+alt+x');
         process.exit();
     }
 
+    // Register closing application shortcut.
     var ret = globalShortcut.register('ctrl+alt+q', function() {
         console.log(`global shortcut close application`);
         app.exit(0);
     });
 
     if (!ret) {
-        console.log('registration failed');
+        console.log('registration failed ctrl+alt+q');
         process.exit();
     }
 });

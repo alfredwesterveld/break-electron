@@ -1,13 +1,27 @@
 <html>
 <head>
     <style>
-        body {
+        html, body {
+            background-color: deepskyblue;
         }
 
+        /*.center {*/
+            /*margin: auto;*/
+            /*background-color: deepskyblue;*/
+            /*width: 50%;*/
+        /*}*/
+
         .center {
-            margin: auto;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            -webkit-box-align: center;
+
+            align-items: center;
             background-color: deepskyblue;
-            width: 50%;
         }
 
         .center h1 {
@@ -50,7 +64,7 @@
             const timeDOM = $('#time');
 
 
-            const showTimeLeft = function () {
+            const showTimeLeft = function (obj) {
                 let duration = micro.duration;
                 timeDOM.text(`${duration} seconds left`);
 
@@ -66,10 +80,11 @@
                 const timer = setInterval(everySecond, 1000)
             }
 
+            // CODE DUPLICATION :(
             const takeMicroBreak = function () {
                 const onInterval = function () {
                     win.showInactive();
-                    showTimeLeft();
+                    showTimeLeft(obj.micro);
 
                     Promise.delay(seconds(micro.duration)).then(function (val) {
                         win.hide();
@@ -77,13 +92,31 @@
                 }
 
                 try {
-                    setInterval(onInterval, seconds(micro.x));
+                    setInterval(onInterval, seconds(micro.after));
+                } catch (e) {
+                    return e;
+                }
+            }
+
+            const takeMacroBreak = function () {
+                const onInterval = function () {
+                    win.showInactive();
+                    showTimeLeft(obj.macro);
+
+                    Promise.delay(seconds(macro.duration)).then(function (val) {
+                        win.hide();
+                    });
+                }
+
+                try {
+                    setInterval(onInterval, seconds(macro.after));
                 } catch (e) {
                     return e;
                 }
             }
 
             takeMicroBreak();
+//            takeMacroBreak();
         </script>
     </div>
 </body>
