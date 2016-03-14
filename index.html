@@ -11,17 +11,13 @@
             /*width: 50%;*/
         /*}*/
 
-        .center {
-            display: -ms-flexbox;
-            display: -webkit-flex;
+        #outer {
+            width: 400px;
+            height: 200px;
+            background-color: #333333;
             display: flex;
-
-            -ms-flex-align: center;
-            -webkit-align-items: center;
-            -webkit-box-align: center;
-
             align-items: center;
-            background-color: deepskyblue;
+            justify-content: center;
         }
 
         .center h1 {
@@ -31,7 +27,7 @@
     </style>
 </head>
 <body>
-    <div class="center">
+    <div class="outer">
         <h1>Take a break</h1>
         <div>
             <div>
@@ -58,19 +54,17 @@
             const $ = require('jquery');
             const remote = require('remote');
             const win = remote.getCurrentWindow();
-            const data = fs.readFileSync('./settings.json', 'utf-8');
-            const obj = JSON.parse(data);
-            const micro = obj.micro;
+            const breaks = require('./settings.js');
             const timeDOM = $('#time');
+            let i = 0;
 
-
-            const showTimeLeft = function (obj) {
-                let duration = micro.duration;
+            const showTimeLeft = function (duration) {
                 timeDOM.text(`${duration} seconds left`);
 
                 function everySecond() {
                     if (--duration === 0) {
                         console.log('cancel timer');
+                        win.hide();
                         clearInterval(timer);
                     } else {
                         timeDOM.text(`${duration} seconds left`);
@@ -80,43 +74,30 @@
                 const timer = setInterval(everySecond, 1000)
             }
 
-            // CODE DUPLICATION :(
-            const takeMicroBreak = function () {
+            const takeBreak = function (name) {
+
                 const onInterval = function () {
+                    const otherName = (name === "micro" ? "macro" : "micro");
+                    let mybreak = breaks[name];
+
+                    if (i++ === breaks[otherName]) {
+                        clearInterval(timer);
+                        mybreak = breaks[otherName];
+                    }
+
                     win.showInactive();
-                    showTimeLeft(obj.micro);
 
-                    Promise.delay(seconds(micro.duration)).then(function (val) {
-                        win.hide();
-                    });
+                    showTimeLeft(mybreak.duration);
+
+//                    Promise.delay(seconds(.duration)).then(function(val) {
+//                        win.hide();
+//                    });
                 }
 
-                try {
-                    setInterval(onInterval, seconds(micro.after));
-                } catch (e) {
-                    return e;
-                }
+                const timer = setInterval(onInterval, seconds(breaks[name].after));
             }
 
-            const takeMacroBreak = function () {
-                const onInterval = function () {
-                    win.showInactive();
-                    showTimeLeft(obj.macro);
-
-                    Promise.delay(seconds(macro.duration)).then(function (val) {
-                        win.hide();
-                    });
-                }
-
-                try {
-                    setInterval(onInterval, seconds(macro.after));
-                } catch (e) {
-                    return e;
-                }
-            }
-
-            takeMicroBreak();
-//            takeMacroBreak();
+            takeBreak("micro");
         </script>
     </div>
 </body>

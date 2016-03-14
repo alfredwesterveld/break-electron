@@ -11,6 +11,7 @@ app.on('ready', function() {
     var screen = require('screen');
     var displays = screen.getAllDisplays();
     var externalDisplay = null;
+    
     for (var i in displays) {
         if (displays[i].bounds.x > 0 || displays[i].bounds.y > 0) {
             externalDisplay = displays[i];
@@ -21,11 +22,14 @@ app.on('ready', function() {
     if (externalDisplay) {
 
         // Should be calculated by box(dimensions).
+
+        console.log(externalDisplay.bounds);
         externaldisplay = new BrowserWindow({
-            x: externalDisplay.bounds.x + ((externalDisplay.bounds.x + 200) / 2),
-            y: externalDisplay.bounds.y + ((externalDisplay.bounds.y + 900 / 2)),
+            x: externalDisplay.bounds.x + ((externalDisplay.bounds.width - 400) / 2),
+            y: externalDisplay.bounds.y + ((externalDisplay.bounds.height - 200) / 2),
             show: false,
             width: 400,
+            height: 200,
             frame: false,
             transparent: true,
             resizable: false
@@ -38,6 +42,7 @@ app.on('ready', function() {
     win = new BrowserWindow({
         show: false,
         width: 400,
+        height: 200,
         frame: false,
         transparent: true,
         resizable: false
@@ -60,17 +65,17 @@ app.on('ready', function() {
 
     if (!ret) {
         console.log('registration failed ctrl+alt+x');
-        process.exit();
+        app.quit();
     }
 
     // Register closing application shortcut.
     var ret = globalShortcut.register('ctrl+alt+q', function() {
         console.log(`global shortcut close application`);
-        app.exit(0);
+        app.quit();
     });
 
     if (!ret) {
         console.log('registration failed ctrl+alt+q');
-        process.exit();
+        app.quit();
     }
 });
